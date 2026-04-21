@@ -1,0 +1,56 @@
+@model List<ProjetConception.Models.Client>
+
+<h2>@ViewBag.PageTitle</h2>
+
+@if ((bool)ViewBag.IsAdmin)
+{
+    <p>Bienvenue dans l’espace administrateur. Vous pouvez gérer les clients et leurs accès.</p>
+
+    <div class="actions-bar">
+        <a class="btn-main" href="/Client/Create">Ajouter un client</a>
+        <a class="btn-main" href="/Admin/Users">Voir les utilisateurs</a>
+        <a class="btn-main" href="/Admin/GrantAccess">Gérer les accès</a>
+    </div>
+}
+else
+{
+    <p>Bienvenue dans votre espace client. Vous pouvez consulter vos clients et leurs décodeurs.</p>
+}
+
+<div class="card-box">
+    @if (Model.Count == 0)
+    {
+        <p>Aucun client disponible.</p>
+    }
+    else
+    {
+        <table>
+            <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>Nom du client</th>
+                <th>Nombre de décodeurs</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var client in Model)
+            {
+                <tr>
+                    <td>@client.Id</td>
+                    <td>@client.Name</td>
+                    <td>@client.Decoders.Count</td>
+                    <td>
+                        <a class="btn-main" href="/Client/Details/@client.Id">Ouvrir</a>
+
+                        @if ((bool)ViewBag.IsAdmin)
+                        {
+                            <a class="btn-danger-custom" href="/Client/Delete/@client.Id">Supprimer</a>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>

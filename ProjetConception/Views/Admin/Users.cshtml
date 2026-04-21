@@ -1,0 +1,50 @@
+@model List<ProjetConception.Models.User>
+
+<h2>Liste des utilisateurs</h2>
+
+<div class="actions-bar">
+    <a class="btn-main" href="/Client/Index">Retour à l’accueil</a>
+    <a class="btn-main" href="/Admin/GrantAccess">Gérer les accès</a>
+</div>
+
+<div class="card-box">
+    @if (Model.Count == 0)
+    {
+        <p>Aucun utilisateur n’est enregistré.</p>
+    }
+    else
+    {
+        <table>
+            <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>Nom</th>
+                <th>Nom d’utilisateur</th>
+                <th>Rôle</th>
+                <th>Clients accessibles</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var utilisateur in Model)
+            {
+                <tr>
+                    <td>@utilisateur.Id</td>
+                    <td>@utilisateur.Name</td>
+                    <td>@utilisateur.Username</td>
+                    <td>@utilisateur.Role</td>
+                    <td>
+                        @if (utilisateur.AccessibleClientIds.Count == 0)
+                        {
+                            <span>Aucun accès particulier</span>
+                        }
+                        else
+                        {
+                            <span>@string.Join(", ", utilisateur.AccessibleClientIds)</span>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>

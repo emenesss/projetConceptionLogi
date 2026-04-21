@@ -1,0 +1,76 @@
+@model ProjetConception.Models.Decodeur
+
+<h2>Détail du décodeur</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="message-success">
+        @TempData["Message"]
+    </div>
+}
+
+<div class="actions-bar">
+    <a class="btn-main" href="/Client/Details/@Model.ClientId">Retour au client</a>
+</div>
+
+<div class="card-box">
+    <p><strong>Identifiant :</strong> @Model.Id</p>
+    <p><strong>Numéro de série :</strong> @Model.SerialNumber</p>
+    <p><strong>Client associé :</strong> @Model.ClientId</p>
+    <p><strong>Adresse IP :</strong> @Model.Address</p>
+</div>
+
+<div class="card-box">
+    <h3>Actions du décodeur</h3>
+
+    <div class="actions-bar">
+        <a class="btn-main" href="/Decoder/Info/@Model.Id">Obtenir l’état</a>
+        <a class="btn-main" href="/Decoder/Reboot/@Model.Id">Redémarrer</a>
+        <a class="btn-main" href="/Decoder/Reset/@Model.Id">Réinitialiser</a>
+        <a class="btn-danger-custom" href="/Decoder/Shutdown/@Model.Id">Éteindre</a>
+    </div>
+</div>
+
+<div class="card-box">
+    <h3>Chaînes disponibles</h3>
+
+    @if (Model.Channels.Count == 0)
+    {
+        <p>Aucune chaîne n’est enregistrée pour ce décodeur.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var chaine in Model.Channels)
+            {
+                <li>@chaine</li>
+            }
+        </ul>
+    }
+</div>
+
+<div class="card-box">
+    <h3>Ajouter une chaîne</h3>
+
+    <form method="post" action="/Decoder/AddChannel">
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <label>Nom de la chaîne</label>
+        <input type="text" name="channel" />
+
+        <button class="btn-main" type="submit">Ajouter</button>
+    </form>
+</div>
+
+<div class="card-box">
+    <h3>Retirer une chaîne</h3>
+
+    <form method="post" action="/Decoder/RemoveChannel">
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <label>Nom de la chaîne</label>
+        <input type="text" name="channel" />
+
+        <button class="btn-danger-custom" type="submit">Retirer</button>
+    </form>
+</div>
