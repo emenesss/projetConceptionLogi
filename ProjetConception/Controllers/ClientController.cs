@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using ProjetConception.Models;
+using ProjetConception.DAO;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 
 namespace ProjetConception.Controllers
 {
+    
     /// 
     /// Contrôleur responsable de l'affichage et de la gestion des clients.
     /// L'administrateur peut voir tous les clients, tandis que l'utilisateur final
@@ -11,6 +14,7 @@ namespace ProjetConception.Controllers
     /// 
     public class ClientController : Controller
     {
+        
         /// 
         /// Affiche la page principale des clients.
         /// Le contenu affiché varie selon le rôle de l'utilisateur connecté.
