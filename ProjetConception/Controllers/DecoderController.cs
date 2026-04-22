@@ -80,7 +80,8 @@ namespace ProjetConception.Controllers
         /// 
         /// Supprime un décodeur associé à un client.
         /// Réservé à l'administrateur.
-        /// 
+        ///
+        [HttpPost]
         public IActionResult Delete(int clientId, int decoderId)
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
@@ -89,6 +90,8 @@ namespace ProjetConception.Controllers
             }
 
             ClientDao clientDao = new ClientDao();
+            DecodeurDao decodeurDao = new DecodeurDao();
+
 
             Client? clientSelectionne = clientDao.SelectClientById(clientId);
 
@@ -97,6 +100,8 @@ namespace ProjetConception.Controllers
                 clientSelectionne.RemoveDecoder(decoderId);
                 clientDao.UpdateClientDecodeurs(clientId, clientSelectionne.Decoders);
             }
+            
+            decodeurDao.DeleteDecodeur(decoderId);
 
             return RedirectToAction("Details", "Client", new { id = clientId });
         }
