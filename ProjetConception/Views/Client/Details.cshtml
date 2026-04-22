@@ -46,10 +46,11 @@
 
                         @if ((bool)ViewBag.IsAdmin)
                         {
-                            <a class="btn-danger-custom"
-                               href="/Decoder/Delete?clientId=@Model.Id&decoderId=@decodeur.Id">
-                                Retirer
-                            </a>
+                            <form method="post" action="/Decoder/Delete" style="display:inline;">
+                                <input type="hidden" name="clientId" value="@Model.Id" />
+                                <input type="hidden" name="decoderId" value="@decodeur.Id" />
+                                <button type="submit" class="btn-danger-custom">Retirer</button>
+                            </form>
                         }
                     </td>
                 </tr>
