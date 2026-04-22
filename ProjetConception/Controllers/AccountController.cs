@@ -8,6 +8,8 @@ namespace ProjetConception.Controllers
 {
     public class AccountController : Controller
     {
+        UserDao userDao = new UserDao();
+        
         [HttpGet]
         public IActionResult Login()
         {
@@ -17,8 +19,7 @@ namespace ProjetConception.Controllers
         [HttpPost]
         public IActionResult Login(LoginDto loginDto)
         {
-            UserDao dao = new UserDao();
-            User? user = dao.SelectUserByUsernameAndPassword(loginDto.Username, loginDto.Password);
+            User? user = userDao.SelectUserByUsernameAndPassword(loginDto.Username, loginDto.Password);
             if (user == null)
             {
                 ViewBag.Error = "Login invalide";
