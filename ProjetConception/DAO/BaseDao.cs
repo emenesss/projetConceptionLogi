@@ -1,7 +1,5 @@
 ﻿namespace ProjetConception.DAO;
 using Microsoft.Data.SqlClient;
-using ProjetConception.Models;
-using System.Threading.Tasks;
 
 public abstract class BaseDao
 {
