@@ -3,6 +3,7 @@ using ProjetConception.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using ProjetConception.DAO;
+using System.Text.Json;
 
 namespace ProjetConception.Controllers
 {
@@ -264,6 +265,26 @@ namespace ProjetConception.Controllers
                 : "La chaîne demandée est introuvable.";
 
             return RedirectToAction("Details", new { id });
+        }
+        
+        
+        ///
+        /// Récupère le status
+        ///
+        [HttpGet]
+        public async Task<IActionResult> GetStatus(int id)
+        {
+            DecodeurDao decodeurDao = new DecodeurDao();
+            Decodeur? decodeur = decodeurDao.SelectDecodeurById(id);
+
+            if (decodeur == null)
+                return NotFound();
+
+            string json = await _serviceApiDecodeur.SendActionAsync(decodeur.Address, "info");
+
+            var parsed = JsonSerializer.Deserialize<JsonElement>(json);
+
+            return Json(parsed);
         }
     }
 }
