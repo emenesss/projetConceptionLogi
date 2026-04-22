@@ -25,7 +25,7 @@
 
     <div class="actions-bar">
         <a class="btn-main" href="/Decoder/Info/@Model.Id">Obtenir l’état</a>
-        <a class="btn-main" href="/Decoder/Reboot/@Model.Id">Redémarrer</a>
+        <a class="btn-main" href="#" onclick="rebootAndPoll(@Model.Id); return false;">Redémarrer</a>
         <a class="btn-main" href="/Decoder/Reset/@Model.Id">Réinitialiser</a>
         <a class="btn-danger-custom" href="/Decoder/Shutdown/@Model.Id">Éteindre</a>
     </div>
@@ -74,3 +74,39 @@
         <button class="btn-danger-custom" type="submit">Retirer</button>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    async function rebootAndPoll(id) {
+        // 1. Appel reboot (AJAX)
+        await fetch(`/Decoder/Reboot/${id}`);
+
+        // 2. Attendre un peu
+        setTimeout(() => startPolling(id), 2000);
+    }
+    async function startPolling(decoderId) {
+        let initialRes = await fetch(`/Decoder/GetStatus/${decoderId}`);
+        let initialData = await initialRes.json();
+        let initialRestart = initialData.lastRestart;
+        console.log(initialRestart);
+    
+        let interval = setInterval(async () => {
+            let res = await fetch(`/Decoder/GetStatus/${decoderId}`);
+            let data = await res.json();
+    
+            console.log(data);
+    
+            if (data.response === "Error") {
+                clearInterval(interval);
+                alert("Erreur API: " + data.message);
+                return;
+            }
+    
+            if (data.state === "active" && data.lastRestart !== initialRestart) {
+                clearInterval(interval);
+                alert("Le décodeur a redémarré !");
+            }
+        }, 3000);
+}
+</script>
+}
