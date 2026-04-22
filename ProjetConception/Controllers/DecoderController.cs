@@ -14,6 +14,10 @@ namespace ProjetConception.Controllers
     {
         // Service utilisé pour communiquer avec l'API du professeur
         private readonly DecoderApiService _serviceApiDecodeur = new DecoderApiService();
+        
+        ClientDao clientDao = new ClientDao();
+        DecodeurDao decodeurDao = new DecodeurDao();
+        UserDao userDao = new UserDao();
 
         /// 
         /// Affiche le formulaire permettant d'ajouter un décodeur à un client.
@@ -42,9 +46,6 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Index", "Client");
             }
-
-            ClientDao clientDao = new ClientDao();
-            DecodeurDao decodeurDao = new DecodeurDao();
 
             Client? clientSelectionne = clientDao.SelectClientById(clientId);
 
@@ -87,11 +88,7 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Index", "Client");
             }
-
-            ClientDao clientDao = new ClientDao();
-            DecodeurDao decodeurDao = new DecodeurDao();
-
-
+            
             Client? clientSelectionne = clientDao.SelectClientById(clientId);
 
             if (clientSelectionne != null)
@@ -118,9 +115,6 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            
-            UserDao userDao = new UserDao();
-            DecodeurDao decodeurDao = new DecodeurDao();
 
             User? utilisateurCourant = userDao.SelectUserById(idUtilisateur.Value);
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
@@ -147,7 +141,6 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Info(int id)
         {
-            DecodeurDao decodeurDao = new DecodeurDao();
             
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
@@ -168,7 +161,6 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Reboot(int id)
         {
-            DecodeurDao decodeurDao = new DecodeurDao();
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
@@ -188,7 +180,6 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Reset(int id)
         {
-            DecodeurDao decodeurDao = new DecodeurDao();
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
@@ -208,7 +199,6 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Shutdown(int id)
         {
-            DecodeurDao decodeurDao = new DecodeurDao();
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
@@ -228,7 +218,6 @@ namespace ProjetConception.Controllers
         [HttpPost]
         public IActionResult AddChannel(int id, string channel)
         {
-            DecodeurDao decodeurDao = new DecodeurDao();
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
@@ -256,7 +245,6 @@ namespace ProjetConception.Controllers
         [HttpPost]
         public IActionResult RemoveChannel(int id, string channel)
         {
-            DecodeurDao decodeurDao = new DecodeurDao();
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)

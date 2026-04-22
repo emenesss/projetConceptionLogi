@@ -6,12 +6,14 @@ namespace ProjetConception.Controllers
 {
     public class AdminController : Controller
     {
+        ClientDao clientDao = new ClientDao();
+        UserDao userDao = new UserDao();
+        
         public IActionResult Users()
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("Index", "Client");
-
-            UserDao userDao = new UserDao();
+            
             List<User> users = userDao.SelectAllUsers();
 
             return View(users);
@@ -23,8 +25,6 @@ namespace ProjetConception.Controllers
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("Index", "Client");
             
-            UserDao userDao = new UserDao();
-            ClientDao clientDao = new ClientDao();
 
             ViewBag.Users = userDao.SelectAllUsers();
             ViewBag.Clients = clientDao.SelectAllClients();
@@ -36,9 +36,6 @@ namespace ProjetConception.Controllers
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("Index", "Client");
-
-            UserDao userDao = new UserDao();
-            ClientDao clientDao = new ClientDao();
 
             User? user = userDao.SelectUserById(userId);
             Client? client = clientDao.SelectClientById(clientId);

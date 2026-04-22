@@ -12,6 +12,10 @@ namespace ProjetConception.Controllers
     /// 
     public class ClientController : Controller
     {
+        
+        ClientDao clientDao = new ClientDao();
+        UserDao userDao = new UserDao();
+        
         /// 
         /// Affiche la page principale des clients.
         /// Le contenu affiché varie selon le rôle de l'utilisateur connecté.
@@ -25,9 +29,6 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-
-            UserDao userDao = new UserDao();
-            ClientDao clientDao = new ClientDao();
 
             User? utilisateurCourant = userDao.SelectUserById(idUtilisateur.Value);
 
@@ -85,8 +86,6 @@ namespace ProjetConception.Controllers
                 ViewBag.Error = "Le nom du client est obligatoire.";
                 return View();
             }
-            
-            ClientDao clientDao = new ClientDao();
 
             bool identifiantDejaUtilise = clientDao.ClientIdExists(id);
 
@@ -114,8 +113,6 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Index");
             }
-
-            ClientDao clientDao = new ClientDao();
             clientDao.DeleteClient(id);
 
             return RedirectToAction("Index");
@@ -134,9 +131,6 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            
-            ClientDao clientDao = new ClientDao();
-            UserDao userDao = new UserDao();
 
             User? utilisateurCourant = userDao.SelectUserById(idUtilisateur.Value);
             Client? clientSelectionne = clientDao.SelectClientById(id);
