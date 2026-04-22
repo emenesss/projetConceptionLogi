@@ -125,6 +125,7 @@ namespace ProjetConception.Controllers
 
             User? utilisateurCourant = userDao.SelectUserById(idUtilisateur.Value);
             Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
+            
 
             if (utilisateurCourant == null || decodeurSelectionne == null)
             {
@@ -158,7 +159,11 @@ namespace ProjetConception.Controllers
             }
 
             string resultatApi = await _serviceApiDecodeur.SendActionAsync(decodeurSelectionne.Address, "info");
-            TempData["Message"] = resultatApi;
+            var json = JsonSerializer.Deserialize<JsonElement>(resultatApi);
+            TempData["Message"] = "Succès de l'interrogation.";
+            TempData["State"] = json.GetProperty("state").GetString();
+            TempData["lastRestart"] = json.GetProperty("lastRestart").GetString();
+            TempData["lastReinit"] = json.GetProperty("lastReinit").GetString();
 
             return RedirectToAction("Details", new { id });
         }

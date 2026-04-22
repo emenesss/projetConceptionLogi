@@ -33,6 +33,12 @@
 </div>
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const box = document.getElementsByClassName("message-success");
+    setTimeout(() => {
+        box.innerHTML = "";
+    }, 5000);
+</script>
 @RenderSection("Scripts", required: false)
 </body>
 </html>

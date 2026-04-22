@@ -76,6 +76,14 @@ a {
     font-weight: 600;
 }
 
+.text-danger-custom-thin {
+    display: inline-block;
+    color: #dc2626;
+    font-weight: 50;
+    border: none;
+    background: none;
+}
+
 .btn-danger-custom:hover {
     background-color: #b91c1c;
     color: white;

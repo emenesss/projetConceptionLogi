@@ -1,13 +1,16 @@
 @model ProjetConception.Models.Decodeur
 
-<h2>Détail du décodeur</h2>
 
-@if (TempData["Message"] != null)
-{
-    <div class="message-success">
-        @TempData["Message"]
-    </div>
-}
+<h2>Détail du décodeur</h2>
+<div id="messageBox">
+    @if (TempData["Message"] != null)
+    {
+        <div class="message-success">
+            @TempData["Message"]
+        </div>
+    }
+</div>
+
 
 <div class="actions-bar">
     <a class="btn-main" href="/Client/Details/@Model.ClientId">Retour au client</a>
@@ -16,7 +19,7 @@
 <div class="card-box">
     <p><strong>Identifiant :</strong> @Model.Id</p>
     <p><strong>Numéro de série :</strong> @Model.SerialNumber</p>
-    <p><strong>Client associé :</strong> @Model.ClientId</p>
+    <p><strong>ID du client associé :</strong> @Model.ClientId</p>
     <p><strong>Adresse IP :</strong> @Model.Address</p>
 </div>
 
@@ -29,6 +32,12 @@
         <a class="btn-main" href="/Decoder/Reset/@Model.Id">Réinitialiser</a>
         <a class="btn-danger-custom" href="/Decoder/Shutdown/@Model.Id">Éteindre</a>
     </div>
+    @if (TempData["State"] != null)
+    {
+        <p><strong>Status :</strong> @TempData["State"]</p>
+        <p><strong>Dernier démarrage :</strong> @TempData["lastRestart"]</p>
+        <p><strong>Dernier réinit. :</strong> @TempData["lastReinit"]</p>
+    }
 </div>
 
 <div class="card-box">
@@ -43,7 +52,16 @@
         <ul>
             @foreach (var chaine in Model.Channels)
             {
-                <li>@chaine</li>
+                <li>@chaine
+                    <form method="post" action="/Decoder/RemoveChannel" style="display:inline;">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="channel" value="@chaine" />
+
+                        <button type="submit" class="text-danger-custom-thin">
+                            Supprimer
+                        </button>
+                    </form>
+                </li>
             }
         </ul>
     }
@@ -62,26 +80,10 @@
     </form>
 </div>
 
-<div class="card-box">
-    <h3>Retirer une chaîne</h3>
-
-    <form method="post" action="/Decoder/RemoveChannel">
-        <input type="hidden" name="id" value="@Model.Id" />
-
-        <label>Nom de la chaîne</label>
-        <input type="text" name="channel" />
-
-        <button class="btn-danger-custom" type="submit">Retirer</button>
-    </form>
-</div>
-
 @section Scripts {
 <script>
     async function rebootAndPoll(id) {
-        // 1. Appel reboot (AJAX)
         await fetch(`/Decoder/Reboot/${id}`);
-
-        // 2. Attendre un peu
         setTimeout(() => startPolling(id), 2000);
     }
     async function startPolling(decoderId) {
@@ -104,9 +106,22 @@
     
             if (data.state === "active" && data.lastRestart !== initialRestart) {
                 clearInterval(interval);
-                alert("Le décodeur a redémarré !");
+                showNotification("Le décodeur a redémarré !");
             }
         }, 3000);
-}
+    }
+    function showNotification(message) {
+        const box = document.getElementById("messageBox");
+
+        box.innerHTML = `
+        <div class="message-success">
+            ${message}
+        </div>
+    `;
+        
+        setTimeout(() => {
+            box.innerHTML = "";
+        }, 5000);
+    }
 </script>
 }
