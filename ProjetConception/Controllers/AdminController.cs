@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ProjetConception.Models;
+using ProjetConception.DAO;
 
 namespace ProjetConception.Controllers
 {
@@ -10,7 +11,10 @@ namespace ProjetConception.Controllers
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("Index", "Client");
 
-            return View(DataStore.ISP.Users);
+            UserDao userDao = new UserDao();
+            List<User> users = userDao.SelectAllUsers();
+
+            return View(users);
         }
 
         [HttpGet]
@@ -18,9 +22,12 @@ namespace ProjetConception.Controllers
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("Index", "Client");
+            
+            UserDao userDao = new UserDao();
+            ClientDao clientDao = new ClientDao();
 
-            ViewBag.Users = DataStore.ISP.Users;
-            ViewBag.Clients = DataStore.ISP.Clients;
+            ViewBag.Users = userDao.SelectAllUsers();
+            ViewBag.Clients = clientDao.SelectAllClients();
             return View();
         }
 
@@ -30,10 +37,25 @@ namespace ProjetConception.Controllers
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("Index", "Client");
 
-            bool success = DataStore.ISP.GrantUserAccessToClient(userId, clientId);
+            UserDao userDao = new UserDao();
+            ClientDao clientDao = new ClientDao();
 
-            ViewBag.Users = DataStore.ISP.Users;
-            ViewBag.Clients = DataStore.ISP.Clients;
+            User? user = userDao.SelectUserById(userId);
+            Client? client = clientDao.SelectClientById(clientId);
+
+            bool success = false;
+
+            if (user != null && client != null)
+            {
+                if (!user.AccessibleClientIds.Contains(clientId))
+                {
+                    user.AccessibleClientIds.Add(clientId);
+                    success = userDao.UpdateAccessibleClientIds(userId, user.AccessibleClientIds) > 0;
+                }
+            }
+
+            ViewBag.Users = userDao.SelectAllUsers();
+            ViewBag.Clients = clientDao.SelectAllClients();
             ViewBag.Message = success
                 ? "Accès attribué avec succès."
                 : "Impossible d'attribuer l'accès.";

@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ProjetConception.Models;
 using ProjetConception.DAO;
-using Microsoft.Data.SqlClient;
-using System.Linq;
 
 namespace ProjetConception.Controllers
 {
@@ -14,7 +12,6 @@ namespace ProjetConception.Controllers
     /// 
     public class ClientController : Controller
     {
-        
         /// 
         /// Affiche la page principale des clients.
         /// Le contenu affiché varie selon le rôle de l'utilisateur connecté.
@@ -29,23 +26,27 @@ namespace ProjetConception.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            User? utilisateurCourant = DataStore.ISP.Users
-                .FirstOrDefault(u => u.Id == idUtilisateur);
+            UserDao userDao = new UserDao();
+            ClientDao clientDao = new ClientDao();
+
+            User? utilisateurCourant = userDao.SelectUserById(idUtilisateur.Value);
 
             if (utilisateurCourant == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var listeClients = roleUtilisateur == "Admin"
-                ? DataStore.ISP.Clients
-                : DataStore.ISP.Clients
+            List<Client> tousLesClients = clientDao.SelectAllClients();
+
+            List<Client> listeClients = roleUtilisateur == "Admin"
+                ? tousLesClients
+                : tousLesClients
                     .Where(c => utilisateurCourant.AccessibleClientIds.Contains(c.Id))
                     .ToList();
 
             ViewBag.PageTitle = roleUtilisateur == "Admin"
-                ? "Tableau de bord administrateur"
-                : "Mes clients";
+                ? "Panel administrateur"
+                : "Les clients";
 
             ViewBag.IsAdmin = roleUtilisateur == "Admin";
 
@@ -84,8 +85,10 @@ namespace ProjetConception.Controllers
                 ViewBag.Error = "Le nom du client est obligatoire.";
                 return View();
             }
+            
+            ClientDao clientDao = new ClientDao();
 
-            bool identifiantDejaUtilise = DataStore.ISP.Clients.Any(c => c.Id == id);
+            bool identifiantDejaUtilise = clientDao.ClientIdExists(id);
 
             if (identifiantDejaUtilise)
             {
@@ -94,7 +97,7 @@ namespace ProjetConception.Controllers
             }
 
             Client nouveauClient = new Client(id, name);
-            DataStore.ISP.Clients.Add(nouveauClient);
+            clientDao.InsertClient(nouveauClient);
 
             return RedirectToAction("Index");
         }
@@ -102,7 +105,9 @@ namespace ProjetConception.Controllers
         /// 
         /// Supprime un client existant.
         /// Réservé à l'administrateur.
+        ///
         /// 
+        [HttpPost]
         public IActionResult Delete(int id)
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
@@ -110,13 +115,8 @@ namespace ProjetConception.Controllers
                 return RedirectToAction("Index");
             }
 
-            Client? clientASupprimer = DataStore.ISP.Clients
-                .FirstOrDefault(c => c.Id == id);
-
-            if (clientASupprimer != null)
-            {
-                DataStore.ISP.Clients.Remove(clientASupprimer);
-            }
+            ClientDao clientDao = new ClientDao();
+            clientDao.DeleteClient(id);
 
             return RedirectToAction("Index");
         }
@@ -134,12 +134,12 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+            
+            ClientDao clientDao = new ClientDao();
+            UserDao userDao = new UserDao();
 
-            User? utilisateurCourant = DataStore.ISP.Users
-                .FirstOrDefault(u => u.Id == idUtilisateur);
-
-            Client? clientSelectionne = DataStore.ISP.Clients
-                .FirstOrDefault(c => c.Id == id);
+            User? utilisateurCourant = userDao.SelectUserById(idUtilisateur.Value);
+            Client? clientSelectionne = clientDao.SelectClientById(id);
 
             if (utilisateurCourant == null || clientSelectionne == null)
             {

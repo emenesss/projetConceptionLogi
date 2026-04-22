@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjetConception.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjetConception.DAO;
 
 namespace ProjetConception.Controllers
 {
@@ -42,7 +43,10 @@ namespace ProjetConception.Controllers
                 return RedirectToAction("Index", "Client");
             }
 
-            Client? clientSelectionne = DataStore.ISP.FindClientById(clientId);
+            ClientDao clientDao = new ClientDao();
+            DecodeurDao decodeurDao = new DecodeurDao();
+
+            Client? clientSelectionne = clientDao.SelectClientById(clientId);
 
             if (clientSelectionne == null)
             {
@@ -55,12 +59,9 @@ namespace ProjetConception.Controllers
                 ViewBag.ClientId = clientId;
                 return View();
             }
+            
 
-            bool identifiantDecodeurExiste = DataStore.ISP.Clients
-                .SelectMany(c => c.Decoders)
-                .Any(d => d.Id == id);
-
-            if (identifiantDecodeurExiste)
+            if (decodeurDao.DecodeurIdExists(id))
             {
                 ViewBag.Error = "Cet identifiant de décodeur est déjà utilisé.";
                 ViewBag.ClientId = clientId;
@@ -68,7 +69,9 @@ namespace ProjetConception.Controllers
             }
 
             Decodeur nouveauDecodeur = new Decodeur(id, serialNumber, clientId, address);
+            decodeurDao.InsertDecodeur(nouveauDecodeur);
             clientSelectionne.AddDecoder(nouveauDecodeur);
+            clientDao.UpdateClientDecodeurs(clientId, clientSelectionne.Decoders);
 
             return RedirectToAction("Details", "Client", new { id = clientId });
         }
@@ -84,11 +87,14 @@ namespace ProjetConception.Controllers
                 return RedirectToAction("Index", "Client");
             }
 
-            Client? clientSelectionne = DataStore.ISP.FindClientById(clientId);
+            ClientDao clientDao = new ClientDao();
+
+            Client? clientSelectionne = clientDao.SelectClientById(clientId);
 
             if (clientSelectionne != null)
             {
                 clientSelectionne.RemoveDecoder(decoderId);
+                clientDao.UpdateClientDecodeurs(clientId, clientSelectionne.Decoders);
             }
 
             return RedirectToAction("Details", "Client", new { id = clientId });
@@ -107,9 +113,12 @@ namespace ProjetConception.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+            
+            UserDao userDao = new UserDao();
+            DecodeurDao decodeurDao = new DecodeurDao();
 
-            User? utilisateurCourant = DataStore.ISP.FindUserById(idUtilisateur.Value);
-            Decodeur? decodeurSelectionne = DataStore.ISP.FindDecoderById(id);
+            User? utilisateurCourant = userDao.SelectUserById(idUtilisateur.Value);
+            Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (utilisateurCourant == null || decodeurSelectionne == null)
             {
@@ -133,7 +142,9 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Info(int id)
         {
-            Decodeur? decodeurSelectionne = DataStore.ISP.FindDecoderById(id);
+            DecodeurDao decodeurDao = new DecodeurDao();
+            
+            Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
             {
@@ -152,7 +163,8 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Reboot(int id)
         {
-            Decodeur? decodeurSelectionne = DataStore.ISP.FindDecoderById(id);
+            DecodeurDao decodeurDao = new DecodeurDao();
+            Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
             {
@@ -171,7 +183,8 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Reset(int id)
         {
-            Decodeur? decodeurSelectionne = DataStore.ISP.FindDecoderById(id);
+            DecodeurDao decodeurDao = new DecodeurDao();
+            Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
             {
@@ -190,7 +203,8 @@ namespace ProjetConception.Controllers
         /// 
         public async Task<IActionResult> Shutdown(int id)
         {
-            Decodeur? decodeurSelectionne = DataStore.ISP.FindDecoderById(id);
+            DecodeurDao decodeurDao = new DecodeurDao();
+            Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
             {
@@ -209,7 +223,8 @@ namespace ProjetConception.Controllers
         [HttpPost]
         public IActionResult AddChannel(int id, string channel)
         {
-            Decodeur? decodeurSelectionne = DataStore.ISP.FindDecoderById(id);
+            DecodeurDao decodeurDao = new DecodeurDao();
+            Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
             {
@@ -217,6 +232,11 @@ namespace ProjetConception.Controllers
             }
 
             bool operationReussie = decodeurSelectionne.AddChannel(channel);
+            
+            if (operationReussie)
+            {
+                decodeurDao.UpdateChannels(id, decodeurSelectionne.Channels);
+            }
 
             TempData["Message"] = operationReussie
                 ? "La chaîne a été ajoutée avec succès."
@@ -231,7 +251,8 @@ namespace ProjetConception.Controllers
         [HttpPost]
         public IActionResult RemoveChannel(int id, string channel)
         {
-            Decodeur? decodeurSelectionne = DataStore.ISP.FindDecoderById(id);
+            DecodeurDao decodeurDao = new DecodeurDao();
+            Decodeur? decodeurSelectionne = decodeurDao.SelectDecodeurById(id);
 
             if (decodeurSelectionne == null)
             {
@@ -239,6 +260,11 @@ namespace ProjetConception.Controllers
             }
 
             bool operationReussie = decodeurSelectionne.RemoveChannel(channel);
+            
+            if (operationReussie)
+            {
+                decodeurDao.UpdateChannels(id, decodeurSelectionne.Channels);
+            }
 
             TempData["Message"] = operationReussie
                 ? "La chaîne a été retirée avec succès."

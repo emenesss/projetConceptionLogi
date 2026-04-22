@@ -45,7 +45,10 @@ else
 
                         @if ((bool)ViewBag.IsAdmin)
                         {
-                            <a class="btn-danger-custom" href="/Client/Delete/@client.Id">Supprimer</a>
+                            <form method="post" action="/Client/Delete" style="display:inline;">
+                                <input type="hidden" name="id" value="@client.Id" />
+                                <button type="submit" class="btn-danger-custom">Supprimer</button>
+                            </form>
                         }
                     </td>
                 </tr>

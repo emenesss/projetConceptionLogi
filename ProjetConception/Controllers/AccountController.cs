@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjetConception.Models;
 using System.Linq;
+using ProjetConception.DTO;
+using ProjetConception.DAO;
 
 namespace ProjetConception.Controllers
 {
@@ -13,11 +15,10 @@ namespace ProjetConception.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public IActionResult Login(LoginDto loginDto)
         {
-            var user = DataStore.ISP.Users
-                .FirstOrDefault(u => u.Username == username && u.Password == password);
-
+            UserDao dao = new UserDao();
+            User? user = dao.SelectUserByUsernameAndPassword(loginDto.Username, loginDto.Password);
             if (user == null)
             {
                 ViewBag.Error = "Login invalide";

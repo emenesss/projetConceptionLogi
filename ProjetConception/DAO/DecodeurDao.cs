@@ -17,6 +17,9 @@ namespace ProjetConception.DAO
 
             using SqlDataReader reader = command.ExecuteReader();
             
+            if (!reader.Read())
+                return null;
+            
             Decodeur decodeur = new Decodeur(reader.GetInt32(0), reader.GetString(1), reader.GetInt32(2), reader.GetString(3));
 
             if (!reader.IsDBNull(4) &&
@@ -157,6 +160,20 @@ namespace ProjetConception.DAO
             using SqlCommand command = new SqlCommand(sql, connection);
 
             return (int)command.ExecuteScalar();
+        }
+        
+        public bool DecodeurIdExists(int id)
+        {
+            using SqlConnection connection = GetConnection();
+            connection.Open();
+
+            string sql = @"
+                SELECT CASE WHEN EXISTS (SELECT 1 FROM [Decodeur] WHERE id = @id) THEN 1 ELSE 0 END";
+
+            using SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@id", id);
+
+            return (int)command.ExecuteScalar() == 1;
         }
     }
 }
