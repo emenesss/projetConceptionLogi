@@ -1,0 +1,30 @@
+<h2>Créer un utilisateur</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+<div class="form-box">
+<form method="post">
+    <label>ID</label>
+    <input type="number" name="id" />
+
+    <label>Nom</label>
+    <input type="text" name="name" />
+
+    <label>Username</label>
+    <input type="text" name="username" />
+
+    <label>Password</label>
+    <input type="password" name="password" />
+
+    <label>Role</label>
+    <select name="role">
+        <option value="Admin">Admin</option>
+        <option value="EndUser">EndUser</option>
+    </select>
+
+    <button class="btn-main" type="submit">Créer</button>
+</form>
+</div>
+<p><a href="/Client/Index">Retour</a></p>

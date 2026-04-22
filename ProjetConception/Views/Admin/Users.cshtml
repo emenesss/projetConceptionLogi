@@ -5,6 +5,7 @@
 <div class="actions-bar">
     <a class="btn-main" href="/Client/Index">Retour à l’accueil</a>
     <a class="btn-main" href="/Admin/GrantAccess">Gérer les accès</a>
+    <a class="btn-main" href="/Admin/CreateUser">Créer un utilisateur</a>
 </div>
 
 <div class="card-box">
@@ -22,6 +23,7 @@
                 <th>Nom d’utilisateur</th>
                 <th>Rôle</th>
                 <th>Clients accessibles</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -41,6 +43,17 @@
                         {
                             <span>@string.Join(", ", utilisateur.AccessibleClientIds)</span>
                         }
+                    </td>
+                    <td>
+                        <a class="btn-main" href="/Admin/EditUser/@utilisateur.Id">Modifier</a>
+
+                        <form method="post" action="/Admin/DeleteUser" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@utilisateur.Id" />
+                            <button type="submit" class="btn-danger-custom">
+                                Supprimer
+                            </button>
+                        </form>
                     </td>
                 </tr>
             }
