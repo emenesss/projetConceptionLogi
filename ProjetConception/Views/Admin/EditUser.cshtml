@@ -1,0 +1,29 @@
+@model ProjetConception.Models.User
+<h2>Modidier un utilisateur</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+<div class="form-box">
+<form method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    
+    <label>Nom</label>
+    <input type="text" name="name" value="@Model.Name" />
+    <label>Username</label>
+    <input type="text" name="username" value="@Model.Username" />
+    
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Laisser vide pour ne pas changer" />
+
+    <label>Role</label>
+    <select name="role">
+        <option value="Admin" selected="@(Model.Role == Role.Admin)">Admin</option>
+        <option value="EndUser" selected="@(Model.Role == Role.EndUser)">EndUser</option>
+    </select>
+
+    <button class="btn-main" type="submit">Modifier</button>
+</form>
+</div>
+<p><a href="/Client/Index">Retour</a></p>

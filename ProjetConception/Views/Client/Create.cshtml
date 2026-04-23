@@ -1,0 +1,22 @@
+<h2>Créer un client</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+
+<form method="post">
+    <div>
+        <label>ID</label>
+        <input type="number" name="id" />
+    </div>
+
+    <div>
+        <label>Nom</label>
+        <input type="text" name="name" />
+    </div>
+
+    <button type="submit">Créer</button>
+</form>
+
+<p><a href="/Client/Index">Retour</a></p>

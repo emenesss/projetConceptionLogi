@@ -1,0 +1,50 @@
+@using ProjetConception.Models
+@{
+    var listeUtilisateurs = ViewBag.Users as List<User>;
+    var listeClients = ViewBag.Clients as List<Client>;
+}
+
+<h2>Gestion des accès</h2>
+
+<div class="actions-bar">
+    <a class="btn-main" href="/Client/Index">Retour à l’accueil</a>
+    <a class="btn-main" href="/Admin/Users">Voir les utilisateurs</a>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <div class="message-success">
+        @ViewBag.Message
+    </div>
+}
+
+<div class="form-box">
+    <form method="post">
+        <label>Utilisateur</label>
+        <select name="userId">
+            @if (listeUtilisateurs != null)
+            {
+                @foreach (var utilisateur in listeUtilisateurs)
+                {
+                    <option value="@utilisateur.Id">
+                        @utilisateur.Name (@utilisateur.Role)
+                    </option>
+                }
+            }
+        </select>
+        <label>Client</label>
+        <select name="clientId">
+            @if (listeClients != null)
+            {
+                @foreach (var client in listeClients)
+                {
+                    <option value="@client.Id">
+                        @client.Name
+                    </option>
+                }
+            }˜
+        </select>
+
+        <button class="btn-main" type="submit">Attribuer l’accès</button>
+    </form>
+</div>

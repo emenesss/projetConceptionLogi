@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ProjetConception</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="/Client/Index">ProjetConception</a>
+
+            <div class="ms-auto">
+                @if (Context.Session.GetString("Name") != null)
+                {
+                    <span class="text-white me-3">
+                        @Context.Session.GetString("Name") (@Context.Session.GetString("Role"))
+                    </span>
+                    <a class="btn btn-outline-light btn-sm" href="/Account/Logout">Déconnexion</a>
+                }
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="container-fluid px-4 py-4">
+    <main role="main">
+        @RenderBody()
+    </main>
+</div>
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const box = document.getElementsByClassName("message-success");
+    setTimeout(() => {
+        box.innerHTML = "";
+    }, 5000);
+</script>
+@RenderSection("Scripts", required: false)
+</body>
+</html>

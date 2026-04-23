@@ -1,0 +1,29 @@
+<h2>Ajouter un décodeur</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="message-error">
+        @ViewBag.Error
+    </div>
+}
+
+<div class="actions-bar">
+    <a class="btn-main" href="/Client/Details/@ViewBag.ClientId">Retour au client</a>
+</div>
+
+<div class="form-box">
+    <form method="post">
+        <input type="hidden" name="clientId" value="@ViewBag.ClientId" />
+
+        <label>Identifiant du décodeur</label>
+        <input type="number" name="id" />
+
+        <label>Numéro de série</label>
+        <input type="text" name="serialNumber" />
+
+        <label>Adresse IP du simulateur</label>
+        <input type="text" name="address" placeholder="127.0.10.1" />
+
+        <button class="btn-main" type="submit">Ajouter le décodeur</button>
+    </form>
+</div>

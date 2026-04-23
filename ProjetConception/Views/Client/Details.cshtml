@@ -1,0 +1,61 @@
+@model ProjetConception.Models.Client
+
+<h2>@ViewBag.PageTitle</h2>
+
+<div class="actions-bar">
+    <a class="btn-main" href="/Client/Index">Retour à la liste</a>
+
+    @if ((bool)ViewBag.IsAdmin)
+    {
+        <a class="btn-main" href="/Decoder/Create?clientId=@Model.Id">Ajouter un décodeur</a>
+    }
+</div>
+
+<div class="card-box">
+    <p><strong>Identifiant du client :</strong> @Model.Id</p>
+    <p><strong>Nom du client :</strong> @Model.Name</p>
+</div>
+
+<div class="card-box">
+    <h3>Décodeurs associés</h3>
+
+    @if (Model.Decoders.Count == 0)
+    {
+        <p>Aucun décodeur n’est associé à ce client.</p>
+    }
+    else
+    {
+        <table>
+            <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>Numéro de série</th>
+                <th>Adresse IP</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var decodeur in Model.Decoders)
+            {
+                <tr>
+                    <td>@decodeur.Id</td>
+                    <td>@decodeur.SerialNumber</td>
+                    <td>@decodeur.Address</td>
+                    <td>
+                        <a class="btn-main" href="/Decoder/Details/@decodeur.Id">Ouvrir</a>
+
+                        @if ((bool)ViewBag.IsAdmin)
+                        {
+                            <form method="post" action="/Decoder/Delete" style="display:inline;">
+                                <input type="hidden" name="clientId" value="@Model.Id" />
+                                <input type="hidden" name="decoderId" value="@decodeur.Id" />
+                                <button type="submit" class="btn-danger-custom">Retirer</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>

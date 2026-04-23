@@ -1,0 +1,22 @@
+<h2>Connexion</h2>
+
+<div class="form-box">
+    <p>Connectez-vous pour accéder à votre espace administrateur ou utilisateur.</p>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="message-error">
+            @ViewBag.Error
+        </div>
+    }
+
+    <form method="post">
+        <label>Nom d'utilisateur</label>
+        <input type="text" name="username" />
+
+        <label>Mot de passe</label>
+        <input type="password" name="password" />
+
+        <button class="btn-main" type="submit">Se connecter</button>
+    </form>
+</div>

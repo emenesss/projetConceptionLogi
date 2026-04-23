@@ -1,0 +1,126 @@
+@model ProjetConception.Models.Decodeur
+
+
+<h2>Détail du décodeur</h2>
+<div id="messageBox">
+    @if (TempData["Message"] != null)
+    {
+        <div class="message-success">
+            @TempData["Message"]
+        </div>
+    }
+</div>
+
+
+<div class="actions-bar">
+    <a class="btn-main" href="/Client/Details/@Model.ClientId">Retour au client</a>
+</div>
+
+<div class="card-box">
+    <p><strong>Identifiant :</strong> @Model.Id</p>
+    <p><strong>Numéro de série :</strong> @Model.SerialNumber</p>
+    <p><strong>ID du client associé :</strong> @Model.ClientId</p>
+    <p><strong>Adresse IP :</strong> @Model.Address</p>
+</div>
+
+<div class="card-box">
+    <h3>Actions du décodeur</h3>
+
+    <div class="actions-bar">
+        <a class="btn-main" href="/Decoder/Info/@Model.Id">Obtenir l’état</a>
+        <a class="btn-main" href="#" onclick="rebootAndPoll(@Model.Id); return false;">Redémarrer</a>
+        <a class="btn-main" href="/Decoder/Reset/@Model.Id">Réinitialiser</a>
+        <a class="btn-danger-custom" href="/Decoder/Shutdown/@Model.Id">Éteindre</a>
+    </div>
+    @if (TempData["State"] != null)
+    {
+        <p><strong>Status :</strong> @TempData["State"]</p>
+        <p><strong>Dernier démarrage :</strong> @TempData["lastRestart"]</p>
+        <p><strong>Dernier réinit. :</strong> @TempData["lastReinit"]</p>
+    }
+</div>
+
+<div class="card-box">
+    <h3>Chaînes disponibles</h3>
+
+    @if (Model.Channels.Count == 0)
+    {
+        <p>Aucune chaîne n’est enregistrée pour ce décodeur.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var chaine in Model.Channels)
+            {
+                <li>@chaine
+                    <form method="post" action="/Decoder/RemoveChannel" style="display:inline;">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="channel" value="@chaine" />
+
+                        <button type="submit" class="text-danger-custom-thin">
+                            Supprimer
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+<div class="card-box">
+    <h3>Ajouter une chaîne</h3>
+
+    <form method="post" action="/Decoder/AddChannel">
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <label>Nom de la chaîne</label>
+        <input type="text" name="channel" />
+
+        <button class="btn-main" type="submit">Ajouter</button>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    async function rebootAndPoll(id) {
+        await fetch(`/Decoder/Reboot/${id}`);
+        setTimeout(() => startPolling(id), 2000);
+    }
+    async function startPolling(decoderId) {
+        let initialRes = await fetch(`/Decoder/GetStatus/${decoderId}`);
+        let initialData = await initialRes.json();
+        let initialRestart = initialData.lastRestart;
+        console.log(initialRestart);
+    
+        let interval = setInterval(async () => {
+            let res = await fetch(`/Decoder/GetStatus/${decoderId}`);
+            let data = await res.json();
+    
+            console.log(data);
+    
+            if (data.response === "Error") {
+                clearInterval(interval);
+                alert("Erreur API: " + data.message);
+                return;
+            }
+    
+            if (data.state === "active" && data.lastRestart !== initialRestart) {
+                clearInterval(interval);
+                showNotification("Le décodeur a redémarré !");
+            }
+        }, 3000);
+    }
+    function showNotification(message) {
+        const box = document.getElementById("messageBox");
+
+        box.innerHTML = `
+        <div class="message-success">
+            ${message}
+        </div>`;
+        
+        setTimeout(() => {
+            box.innerHTML = "";
+        }, 5000);
+    }
+</script>
+}
